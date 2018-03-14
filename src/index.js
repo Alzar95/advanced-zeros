@@ -1,52 +1,58 @@
 module.exports = function getZerosCount(number, base) {
-    var tmp = base, tmpTwo = 0, tmpThree = 0, powerOne = 0, powerTwo = 0, sa = 0, sb = 0,
-        resultFirst = 0, resultSecond = 0, flag = true, k = 0, mus = [];
+    var tmp = base, tmpSecond = 0, powerOne = 0, powerTwo = 1,
+        k = 0, mus = [], tmpFirst = 0, limiter = 0;
 
     while (tmp > 1) {
-        if ((tmp % 2) == 0) {
-            tmp /= 2;
+        mus = [];
+
+        for (var y = 1; y < tmp; y++) {
+            k = tmp / y;
+            if ((k ^ 0) === k) {
+                mus.push(y);
+            }
+        }
+
+        if ((mus.length > 1) && ((tmp == base) || (tmpFirst === mus[1]))) {
+            tmpFirst = mus[1];
+            tmp /= mus[1];
             powerOne++;
+        } else if (mus.length > 1) {
+            tmpSecond = mus[1];
+            tmp /= mus[1];
+            if (limiter > 0) {
+                powerTwo++;
+            }
+            limiter++;
         } else {
-            for (var y = 1; y < Math.floor(tmp / 2); y++) {
-                k = tmp / y;
-                if ((k ^ 0) === k) {
-                    mus.push(y);
-                }
+            if ((tmpFirst == tmp) && (limiter == 0)) {
+                powerOne++;
             }
-
-            if (mus.length > 1) {
-                tmpTwo = mus[1];
-                tmp /= mus[1];
-            } else {
-                tmpTwo = tmp;
-                tmp /= tmp;
+            if ((tmpSecond == tmp) || (tmpFirst == tmp)) {
+                powerTwo++;
             }
-            powerTwo++;
+            tmpSecond = tmp;
+            tmp /= tmp;
         }
     }
 
-    for (var j = 2; j <= number; j++) {
-        tmpThree = j;
-        flag = true;
-        while (flag) {
-            if ((tmpThree % 2) == 0) {
-                tmpThree /= 2;
-                if ((tmpThree ^ 0) === tmpThree) {
-                    sa++;
-                }
-            } else if (((tmpThree / tmpTwo) ^ 0) === (tmpThree / tmpTwo)) {
-                tmpThree /= tmpTwo;
-                if ((tmpThree ^ 0) === tmpThree) {
-                    sb++;
-                }
-            } else {
-                flag = false;
-            }
+
+    var counter = 0, counter2 = 0, i = number, j = number;
+    if (tmpFirst > 0) {
+        while (i >= tmpFirst) {
+            i = Math.floor(i / tmpFirst);
+            counter += Math.floor(i);
         }
     }
 
-    resultFirst = Math.floor(sa / powerOne);
-    resultSecond = Math.floor(sb / powerTwo);
+    if (tmpSecond > 0) {
+        while (j >= tmpSecond) {
+            j = Math.floor(j / tmpSecond);
+            counter2 += Math.floor(j);
+        }
+    }
+
+    var resultFirst = Math.floor(counter / powerOne);
+    var resultSecond = Math.floor(counter2 / powerTwo);
 
     if (resultFirst < resultSecond) {
         return resultFirst;
